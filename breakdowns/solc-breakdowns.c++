@@ -153,6 +153,8 @@
 // POP                  // [0x3f, value, 0x43, function_selector]
 // JUMP                 // [value, 0x43, function_selector] :: jump to PC 63
 
+/////* 1.  Metadata    */////
+
 // INVALID
 // LOG2
 // PUSH5 0x6970667358

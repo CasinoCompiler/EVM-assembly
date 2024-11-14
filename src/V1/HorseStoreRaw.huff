@@ -1,0 +1,50 @@
+#define constant NUMBER_OF_HORSES_STORAGE_SLOT = FREE_STORAGE_POINTER()
+
+#define macro MAIN() = takes(0) returns(0) {
+    0x00             // Push0 [0]
+    calldataload    // load call data at 0th byte [CALLDATA]
+    // Need to shift first 4 bytes to the right, 32 - 4 = 28 = 224 bits
+    0xe0            // push 224 bits to stack [0xe0, CALLDATA]
+    shr             // Shift right [Function Selector]
+    dup1            // duplicate for checks [Function Selector, Function Selector]
+
+    // Jump to updateHorseNumber if True
+    0xcdfead2e      // [0xcdfead2e, function selector, Function Selector]
+    eq              // [1 or 0 (true/false), Function Selector]
+    updateJump      // [updateHorseNumber program counter, 1 or 0, Function Selector]
+    jumpi           // Jump if true [Function Selector]
+    
+    // Jump to readNumberOfHorses
+    0xe026c017      // [0xe026c017, Function Selector]
+    eq              // [1 or 0, true/false]
+    getJump        // [readNumberOfHorses program counter, 1 or 0]
+    jumpi           // Jump if true []
+
+    0x00 0x00 revert 
+
+    updateJump:
+        SET_NUMBER_HORSES()
+        stop
+
+    getJump:
+        GET_NUMBER_HORSES()
+        stop
+}
+
+#define macro SET_NUMBER_HORSES() = takes(0) returns(0) {
+    0x04                                // [4]
+    calldataload                        // [value]
+    [NUMBER_OF_HORSES_STORAGE_SLOT]     // [storage_key, value]
+    sstore                              // []
+    stop
+}
+
+#define macro GET_NUMBER_HORSES() = takes(0) returns(0) {
+    [NUMBER_OF_HORSES_STORAGE_SLOT]     // [storage_key]
+    sload                               // [value]
+    0x00                                // [0, value]
+    mstore                              // []           memory: [value]
+    0x20                                // [32 bytes]
+    0x00                                // [0, 32 bytes]
+    return                              // []
+}

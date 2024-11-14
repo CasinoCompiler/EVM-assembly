@@ -1,0 +1,67 @@
+/* Interfaces*/
+#define function updateHorseNumber(uint256) nonpayable returns()
+#define function readNumberOfHorses() view returns(uint256)
+
+#define constant NUMBER_OF_HORSES_STORAGE_SLOT = FREE_STORAGE_POINTER()
+
+#define macro GET_SELECTOR() = takes(0) returns(1) {
+    0x00            // [0]
+    calldataload    // [calldataload] 
+    0xe0            // [224, calldata]
+    shr             // [function selector]
+}
+
+#define macro GET_INPUT() = takes(0) returns(2) {
+    0x04            // [4]
+    calldataload    // calldataload - function selector, [value]
+} 
+
+#define macro DISPATCH() = takes(1) returns(0) {
+    // Input stack: [function_selector]
+    
+    // Update horses check
+    dup1
+    __FUNC_SIG(updateHorseNumber)
+    eq
+    updateJump
+    jumpi
+
+    // Read horses check
+    __FUNC_SIG(readNumberOfHorses)
+    eq
+    readJump
+    jumpi
+
+    // If we reach here, no function matched
+    0x00 0x00 revert
+
+    updateJump:
+        SET_NUMBER_HORSES()
+        stop
+
+    readJump:
+        GET_NUMBER_HORSES()
+        stop
+}
+
+#define macro MAIN() = takes(0) returns(0) {
+    GET_SELECTOR()  // [function_selector]
+    DISPATCH()      // dispatch to appropriate function
+}
+
+#define macro SET_NUMBER_HORSES() = takes(0) returns(0) {
+    GET_INPUT()                         // [value]
+    [NUMBER_OF_HORSES_STORAGE_SLOT]     // [storage_slot, value]
+    sstore                              // []
+    stop
+}
+
+#define macro GET_NUMBER_HORSES() = takes(0) returns(0) {
+    [NUMBER_OF_HORSES_STORAGE_SLOT]     // [storage_key]
+    sload                               // [value]
+    0x00                                // [0, value]
+    mstore                              // []           memory: [value]
+    0x00                                // [0]
+    0x20                                // [32 bytes]
+    return                              // []
+}

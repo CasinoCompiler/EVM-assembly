@@ -9,6 +9,9 @@ out/
 
 # Docs
 docs/
+lib/
+script/
 
 # Dotenv file
 .env
+*.txt

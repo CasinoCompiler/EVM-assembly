@@ -3,6 +3,7 @@
 #define function feedHorse(uint256 horseId) nonpayable returns()
 #define function isHappyHorse(uint256 horseId) view returns (bool)
 #define function horseIdToFedTimeStamp(uint256 horseId) view returns(uint256)
+#define function HORSE_HAPPY_IF_FED_WITHIN() pure returns(uint256)
 
 #define macro GET_SELECTOR() = takes(0) returns(1) {
     0x00            // [0]
@@ -39,6 +40,12 @@
     isHappyHorseJump
     jumpi
 
+    // HORSE_HAPPY_IF_FED_WITHIN
+    __FUNC_SIG(HORSE_HAPPY_IF_FED_WITHIN)
+    eq
+    HORSE_HAPPY_IF_FED_WITHIN_JUMP
+    jumpi
+
     // If we reach here, no function matched
     0x00 0x00 revert
 
@@ -53,6 +60,14 @@
     isHappyHorseJump:
         CHECK_HORSE_MOOD()
         stop
+
+    horseIdToFedTimeStampJump:
+        HORSE_ID_TO_TIMESTAMP()
+        stop
+
+    HORSE_HAPPY_IF_FED_WITHIN_JUMP:
+        HORSE_HAPPY_IF_FED_WITHIN_GETTER()
+        stop
 }
 
 #define macro MAIN() = takes(0) returns(0) {
@@ -63,3 +78,5 @@
 #define macro MINT_HORSE() = takes(0) returns(0) {}
 #define macro FEED_HORSE() = takes(0) returns(0) {}
 #define macro CHECK_HORSE_MOOD() = takes(0) returns(0) {}
+#define macro HORSE_ID_TO_TIMESTAMP() = takes(0) returns(0) {}
+#define macro HORSE_HAPPY_IF_FED_WITHIN_GETTER() = takes(0) returns(0) {}

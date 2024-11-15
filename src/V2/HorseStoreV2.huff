@@ -1,0 +1,65 @@
+/* Interfaces */
+#define function mintHorse() nonpayable returns()
+#define function feedHorse(uint256 horseId) nonpayable returns()
+#define function isHappyHorse(uint256 horseId) view returns (bool)
+#define function horseIdToFedTimeStamp(uint256 horseId) view returns(uint256)
+
+#define macro GET_SELECTOR() = takes(0) returns(1) {
+    0x00            // [0]
+    calldataload    // [calldataload] 
+    0xe0            // [224, calldata]
+    shr             // [function selector]
+}
+
+#define macro GET_INPUT() = takes(0) returns(2) {
+    0x04            // [4]
+    calldataload    // calldataload - function selector, [value]
+} 
+
+#define macro DISPATCH() = takes(1) returns(0) {
+    // Input stack: [function_selector]
+    
+    // mintHorse 
+    dup1
+    __FUNC_SIG(mintHorse)
+    eq
+    mintHorseJump
+    jumpi
+
+    // feedHorse
+    dup1
+    __FUNC_SIG(feedHorse)
+    eq
+    feedHorseJump
+    jumpi
+
+    // isHappyHorse
+    __FUNC_SIG(isHappyHorse)
+    eq
+    isHappyHorseJump
+    jumpi
+
+    // If we reach here, no function matched
+    0x00 0x00 revert
+
+    mintHorseJump:
+        MINT_HORSE()
+        stop
+
+    feedHorseJump:
+        FEED_HORSE()
+        stop
+
+    isHappyHorseJump:
+        CHECK_HORSE_MOOD()
+        stop
+}
+
+#define macro MAIN() = takes(0) returns(0) {
+    GET_SELECTOR()  // [function_selector]
+    DISPATCH()      // dispatch to appropriate function
+}
+
+#define macro MINT_HORSE() = takes(0) returns(0) {}
+#define macro FEED_HORSE() = takes(0) returns(0) {}
+#define macro CHECK_HORSE_MOOD() = takes(0) returns(0) {}

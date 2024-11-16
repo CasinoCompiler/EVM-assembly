@@ -7,9 +7,7 @@ import {HorseStore} from "../../src/V1/HorseStore.sol";
 import {IHorseStore} from "../../src/V1/IHorseStore.sol";
 
 contract HorseTestYul is BaseTestV1 {
-
-    function setUp() public override{
+    function setUp() public override {
         horseStore = new HorseStoreYul();
     }
-
 }

@@ -6,19 +6,19 @@ import {Test, console} from "forge-std/Test.sol";
 import {IHorseStore} from "../../src/V1/IHorseStore.sol";
 
 // Make mandatory base tests abstract so they must inherit
-abstract contract BaseTestV1 is Test{
+abstract contract BaseTestV1 is Test {
     IHorseStore public horseStore;
-    
+
     function setUp() public virtual {
         horseStore = IHorseStore(address(new HorseStore()));
     }
 
-    function test_UpdateHorseNumber(uint256 expectedUpdatedNumber) public virtual{
+    function test_UpdateHorseNumber(uint256 expectedUpdatedNumber) public virtual {
         horseStore.updateHorseNumber(expectedUpdatedNumber);
         assertEq(horseStore.readNumberOfHorses(), expectedUpdatedNumber);
     }
 
-    function test_ReadNumberOfHorses() public virtual{
+    function test_ReadNumberOfHorses() public virtual {
         uint256 expectedInitial = 0;
         assertEq(horseStore.readNumberOfHorses(), expectedInitial);
     }
